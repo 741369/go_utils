@@ -241,7 +241,7 @@ func Errorf(ctx context.Context, err error, format string, v ...interface{}) {
 
 func GetTraceId(context context.Context) string {
 	if ctx, ok := context.(*gin.Context); ok && ctx != nil {
-		vipWebTraceid := ctx.GetString("xlvip-game-traceid")
+		vipWebTraceid := ctx.GetString("X-Request-Id")
 		if vipWebTraceid != "" {
 			return vipWebTraceid
 		}
@@ -251,7 +251,7 @@ func GetTraceId(context context.Context) string {
 
 func GetTraceId3(context context.Context) string {
 	if ctx, ok := context.(*gin.Context); ok {
-		vipWebTraceid, ok := ctx.Get("xlvip-game-traceid")
+		vipWebTraceid, ok := ctx.Get("X-Request-Id")
 		if !ok {
 			return ""
 		}
