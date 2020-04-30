@@ -145,135 +145,104 @@ func NewLoggerExt(component string, appGUID string) lager.Logger {
 		sink := lager.NewReconfigurableSink(lager.NewWriterSink(sink, writer, lager.DEBUG), lagerLogLevel)
 		logger.RegisterSink(sink)
 	}
-
 	return logger
 }
 
-func Debug2(action string, data ...lager.Data) {
-	Logger.Debug(action, data...)
-}
-
-func Info3(action string, data ...lager.Data) {
-	Logger.Info(action, data...)
-}
-
-func Warn(action string, data ...lager.Data) {
-	Logger.Warn(action, data...)
-}
-
-func Error2(action string, err error, data ...lager.Data) {
-	Logger.Error(action, err, data...)
-}
-
-func Fatal(action string, err error, data ...lager.Data) {
-	Logger.Fatal(action, err, data...)
-}
-
-func Debugf2(format string, args ...interface{}) {
-	Logger.Debugf(format, args...)
-}
-
-func Infof2(format string, args ...interface{}) {
-	Logger.Infof(format, args...)
-}
-
-func Warnf(format string, args ...interface{}) {
-	Logger.Warnf(format, args...)
-}
-
-func Errorf2(err error, format string, args ...interface{}) {
-	Logger.Errorf(err, format, args...)
-}
-
-func Fatalf(err error, format string, args ...interface{}) {
-	Logger.Fatalf(err, format, args...)
-}
-
 func Debug(ctx context.Context, action string, data ...lager.Data) {
-	data = append(data, map[string]interface{}{"trace_id": GetTraceId(ctx)})
+	if GetTraceId(ctx) != "" {
+		data = append(data, map[string]interface{}{"trace_id": GetTraceId(ctx)})
+	}
 	Logger.Debug(action, data...)
 }
 
 func Debugf(ctx context.Context, format string, v ...interface{}) {
-	data := map[string]interface{}{"trace_id": GetTraceId(ctx)}
 	tmp := fmt.Sprintf(format, v...)
-	Logger.Debug(tmp, data)
-}
-
-func Info2(ctx context.Context, action string, data ...interface{}) {
-	if len(data) > 0 {
-		Logger.Info(action, lager.Data{"trace_id": GetTraceId(ctx), "data": data})
+	if GetTraceId(ctx) != "" {
+		data := map[string]interface{}{"trace_id": GetTraceId(ctx)}
+		Logger.Debug(tmp, data)
 	} else {
-		Logger.Info(action, lager.Data{"trace_id": GetTraceId(ctx)})
-	}
-}
-
-func Info4(ctx context.Context, action string, data ...lager.Data) {
-	if len(data) > 0 {
-		data[0]["trace_id"] = GetTraceId(ctx)
-		Logger.Info(action, data...)
-	} else {
-		Logger.Info(action, lager.Data{"trace_id": GetTraceId(ctx)})
+		Logger.Debug(tmp)
 	}
 }
 
 func Info(ctx context.Context, action string, data ...lager.Data) {
-	data = append(data, map[string]interface{}{"trace_id": GetTraceId(ctx)})
+	if GetTraceId(ctx) != "" {
+		data = append(data, map[string]interface{}{"trace_id": GetTraceId(ctx)})
+	}
 	Logger.Info(action, data...)
 }
 
 func Infof(ctx context.Context, format string, v ...interface{}) {
-	data := map[string]interface{}{"trace_id": GetTraceId(ctx)}
 	tmp := fmt.Sprintf(format, v...)
-	Logger.Info(tmp, data)
+	if GetTraceId(ctx) != "" {
+		data := map[string]interface{}{"trace_id": GetTraceId(ctx)}
+		Logger.Info(tmp, data)
+	} else {
+		Logger.Info(tmp)
+	}
+}
+
+func Warn(ctx context.Context, action string, data ...lager.Data) {
+	if GetTraceId(ctx) != "" {
+		data = append(data, map[string]interface{}{"trace_id": GetTraceId(ctx)})
+	}
+	Logger.Warn(action, data...)
+}
+
+func Warnf(ctx context.Context, format string, v ...interface{}) {
+	tmp := fmt.Sprintf(format, v...)
+	if GetTraceId(ctx) != "" {
+		data := map[string]interface{}{"trace_id": GetTraceId(ctx)}
+		Logger.Warn(tmp, data)
+	} else {
+		Logger.Warn(tmp)
+	}
 }
 
 func Error(ctx context.Context, action string, err error, data ...lager.Data) {
-	data = append(data, map[string]interface{}{"trace_id": GetTraceId(ctx)})
+	if GetTraceId(ctx) != "" {
+		data = append(data, map[string]interface{}{"trace_id": GetTraceId(ctx)})
+	}
 	Logger.Error(action, err, data...)
 }
 
 func Errorf(ctx context.Context, err error, format string, v ...interface{}) {
-	data := map[string]interface{}{"trace_id": GetTraceId(ctx)}
 	tmp := fmt.Sprintf(format, v...)
-	Logger.Error(tmp, err, data)
+	if GetTraceId(ctx) != "" {
+		data := map[string]interface{}{"trace_id": GetTraceId(ctx)}
+		Logger.Error(tmp, err, data)
+	} else {
+		Logger.Error(tmp, err)
+	}
+}
+func Fatal(ctx context.Context, action string, err error, data ...lager.Data) {
+	if GetTraceId(ctx) != "" {
+		data = append(data, map[string]interface{}{"trace_id": GetTraceId(ctx)})
+	}
+	Logger.Fatal(action, err, data...)
+}
+
+func Fatalf(ctx context.Context, err error, format string, v ...interface{}) {
+	tmp := fmt.Sprintf(format, v...)
+	if GetTraceId(ctx) != "" {
+		data := map[string]interface{}{"trace_id": GetTraceId(ctx)}
+		Logger.Fatal(tmp, err, data)
+	} else {
+		Logger.Fatal(tmp, err)
+	}
 }
 
 func GetTraceId(context context.Context) string {
 	if ctx, ok := context.(*gin.Context); ok && ctx != nil {
-		vipWebTraceid := ctx.GetString("X-Request-Id")
-		if vipWebTraceid != "" {
-			return vipWebTraceid
-		}
-	}
-	return ""
-}
-
-func GetTraceId3(context context.Context) string {
-	if ctx, ok := context.(*gin.Context); ok {
-		vipWebTraceid, ok := ctx.Get("X-Request-Id")
-		if !ok {
-			return ""
-		}
-		if traceId, ok := vipWebTraceid.(string); ok {
+		traceId := ctx.GetString("X-Request-Id")
+		if traceId != "" {
 			return traceId
 		}
-		return ""
 	}
 	return ""
 }
 
 var LocalIP = net.ParseIP("127.0.0.1")
-
-func GetTraceId2(context *gin.Context) (traceId string) {
-	ip := LocalIP.String()
-	//if context != nil {
-	//	ip = net.ParseIP(context.ClientIP()).String()
-	//}
-	//fmt.Println("======", ip)
-	traceId = calcTraceId(ip)
-	return
-}
 
 func calcTraceId(ip string) (traceId string) {
 	now := time.Now()
