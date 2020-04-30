@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/741369/go_utils/lager"
+	"github.com/741369/go_utils/log/lager"
 )
 
 //Entry is a struct

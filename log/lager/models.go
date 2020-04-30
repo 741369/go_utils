@@ -49,6 +49,7 @@ type LogFormat struct {
 	LogLevel  LogLevel `json:"level"`
 	Timestamp string   `json:"timestamp"`
 	File      string   `json:"file"`
+	Source    string   `json:"source"`
 	Message   string   `json:"msg"`
 	Data      Data     `json:"data,omitempty"`
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/741369/go_utils/lager/chug"
+	"github.com/741369/go_utils/log/lager/chug"
 	"github.com/onsi/gomega/format"
 	"github.com/onsi/gomega/types"
 )
